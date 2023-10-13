@@ -1,3 +1,5 @@
 Why do I need to write commit messages in russian?
 
 You are now viewing the second branch. (no)
+
+Here is the third edit to the file.
