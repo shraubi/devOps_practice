@@ -1,0 +1,23 @@
+Vagrant.configure("2") do |config|
+
+  machines = [
+    { name: "vm1", cpus: 1, memory: 1024, scripts: "vm1_setup.sh" },
+    { name: "vm2", cpus: 2, memory: 2048, scripts: "vm2_setup.sh" },
+    { name: "vm3", cpus: 3, memory: 4096, scripts: "vm3_setup.sh" }
+  ]
+
+  machines.each do |machine|
+    config.vm.define machine[:name] do |machine_config|
+      machine_config.vm.box = "ubuntu/trusty64"
+      machine_config.vm.hostname = machine[:name]
+      machine_config.vm.network "private_network", type: "dhcp"
+
+      machine_config.vm.provider "virtualbox" do |vb|
+        vb.memory = machine[:memory]
+        vb.cpus = machine[:cpus]
+      end
+
+      machine_config.vm.provision "shell", path: machine[:scripts]
+    end
+  end
+end
