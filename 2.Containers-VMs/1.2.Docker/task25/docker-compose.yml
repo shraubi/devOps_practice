@@ -1,0 +1,30 @@
+version: '3.4'
+x-common:
+  &common
+  build: .
+ 
+  depends_on:
+    postgres:
+      condition: service_healthy
+
+services:
+  postgres:
+    image: postgres:13
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: randombase
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -d randombase -U postgres"]
+      interval: 5s
+      retries: 5
+    restart: always
+
+
+  webserver:
+    <<: *common
+    image: nginxdemos/hello
+    ports:
+      - 8080:80
+    volumes:
+      - ./src:/usr/share/nginx/html
