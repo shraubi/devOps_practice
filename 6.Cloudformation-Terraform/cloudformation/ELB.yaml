@@ -1,0 +1,24 @@
+Parameters:
+  VPCStackName:
+    Default: "VPC"
+    Type: String
+    Description: Name of the VPC Stack
+  EC2StackName:
+    Default: "EC2"
+    Type: String
+    Description: Name of the EC2 Stack
+
+Resources:
+  ElasticLoadBalancer:
+    Type: AWS::ElasticLoadBalancing::LoadBalancer
+    Properties:
+      Listeners:
+        - LoadBalancerPort: 80
+          InstancePort: 80
+          Protocol: HTTP
+      SecurityGroups:
+        - !ImportValue
+          Fn::Sub: "MySecurityGroup"
+      Subnets:
+        - !ImportValue
+          Fn::Sub: "PublicSubnet"

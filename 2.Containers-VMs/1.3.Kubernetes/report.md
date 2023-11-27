@@ -10,4 +10,4 @@ my-service   NodePort    10.111.189.224   <none>        80:31111/TCP   3m45s
 kubectl logs my-pod >>> 2023/11/02 10:39:25 [notice] 1#1: start worker process 14
 
 deleted all and stopped the minicube
-I liked the ingo in the logs and the logic of commands in this service
+I liked the detailed info in the logs and the logic of commands in this service

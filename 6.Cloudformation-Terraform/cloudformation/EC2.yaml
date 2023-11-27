@@ -1,0 +1,33 @@
+Parameters:
+  VPCStackName:
+    Default: "VPC"
+    Type: String
+    Description: Name of the VPC Stack
+  KeyName:
+    Default: "aloho"
+    Type: AWS::EC2::KeyPair::KeyName
+    Description: Name of an existing EC2 KeyPair to enable SSH access to the instance
+
+Resources:
+  PublicSubnet:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !ImportValue
+        Fn::Sub: "MyVPCID"
+      CidrBlock: "10.0.0.0/24"
+      AvailabilityZone: "eu-central-1c"
+      MapPublicIpOnLaunch: true
+
+  MyEC2Instance:
+    Type: AWS::EC2::Instance
+    Properties:
+      KeyName: !Ref KeyName
+      InstanceType: t2.micro
+      ImageId: ami-06dd92ecc74fdfb36
+      SubnetId: !Ref PublicSubnet
+
+Outputs:
+  PublicSubnetID:
+    Value: !Ref PublicSubnet
+    Export:
+      Name: "PublicSubnet"

@@ -1,0 +1,41 @@
+Parameters:
+  VPCStackName:
+    Default: "VPC"
+    Type: String
+    Description: Name of the VPC Stack
+  EC2StackName:
+    Default: "EC2"
+    Type: String
+    Description: Name of the EC2 Stack
+
+Resources:
+  CacheSubnetGroup:
+    Type: AWS::ElastiCache::SubnetGroup
+    Properties:
+      CacheSubnetGroupName: "MyCacheSubnetGroup"
+      Description: "Subnet group for ElastiCache"
+      SubnetIds:
+        - !ImportValue
+          Fn::Sub: "PublicSubnet"
+
+  RedisCacheCluster:
+    Type: AWS::ElastiCache::CacheCluster
+    Properties:
+      CacheNodeType: cache.t2.micro
+      Engine: redis
+      NumCacheNodes: 1
+      CacheSubnetGroupName: !Ref CacheSubnetGroup
+      VpcSecurityGroupIds:
+        - !ImportValue
+          Fn::Sub: "MySecurityGroup"
+
+  MemcachedCacheCluster:
+    Type: AWS::ElastiCache::CacheCluster
+    Properties:
+      CacheNodeType: cache.t2.micro
+      Engine: memcached
+      NumCacheNodes: 1
+      CacheSubnetGroupName: !Ref CacheSubnetGroup
+      VpcSecurityGroupIds:
+        - !ImportValue
+          Fn::Sub: "MySecurityGroup"

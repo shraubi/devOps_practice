@@ -1,0 +1,39 @@
+AWSTemplateFormatVersion: '2010-09-09'
+
+Resources:
+  VPCStack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: https://example1bucket.s3.eu-central-1.amazonaws.com/VPC.yaml
+
+  EC2Stack:
+    Type: AWS::CloudFormation::Stack
+    DependsOn: VPCStack
+    Properties:
+      TemplateURL: https://example1bucket.s3.eu-central-1.amazonaws.com/EC2.yaml
+      Parameters:
+        VPCStackName: !Ref VPCStack
+
+  ELBStack:
+    Type: AWS::CloudFormation::Stack
+    DependsOn: [VPCStack, EC2Stack]
+    Properties:
+      TemplateURL: https://example1bucket.s3.eu-central-1.amazonaws.com/ELB.yaml
+      Parameters:
+        VPCStackName: !Ref VPCStack
+        EC2StackName: !Ref EC2Stack
+
+  RDSStack:
+    Type: AWS::CloudFormation::Stack
+    DependsOn: VPCStack
+    Properties:
+      TemplateURL: https://example1bucket.s3.eu-central-1.amazonaws.com/RDS.yaml
+
+  ElastiCacheStack:
+    Type: AWS::CloudFormation::Stack
+    DependsOn: VPCStack
+    Properties:
+      TemplateURL: https://example1bucket.s3.eu-central-1.amazonaws.com/ElastiCache.yaml
+      Parameters:
+        VPCStackName: !Ref VPCStack
+        EC2StackName: !Ref EC2Stack

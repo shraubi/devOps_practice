@@ -1,0 +1,72 @@
+Parameters:
+  VPCName:
+    Default: "VPC"
+    Type: String
+    Description: Name for the VPC
+
+Resources:
+  MyVPC:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: "10.0.0.0/16"
+      EnableDnsSupport: true
+      EnableDnsHostnames: true
+      Tags:
+        - Key: Name
+          Value: !Ref VPCName
+  MySecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    DependsOn: MyVPC
+    Properties:
+      GroupDescription: Opening port 80
+      VpcId: !Ref MyVPC
+      SecurityGroupIngress: 
+        - FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+          IpProtocol: tcp
+  SGPing:
+    Type: AWS::EC2::SecurityGroup
+    DependsOn: MyVPC
+    Properties:
+      GroupDescription: SG to test ping
+      VpcId: !Ref MyVPC
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 10.0.0.0/24
+        - IpProtocol: icmp
+          FromPort: 8
+          ToPort: -1
+          CidrIp: 10.0.0.0/24
+
+  InternetGateway:
+    Type: AWS::EC2::InternetGateway
+    Properties:
+      Tags:
+        - Key: Name
+          Value: !Sub "InternetGateway"
+
+  AttachGateway:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      VpcId: !Ref MyVPC
+      InternetGatewayId: !Ref InternetGateway
+
+
+Outputs:
+  SGPingID:
+    Value: !Ref SGPing
+    Export:
+      Name: "SGPing"
+
+  MySecurityGroup:
+    Value: !Ref MySecurityGroup
+    Export:
+      Name: "MySecurityGroup"
+
+  MyVPCID:
+    Value: !Ref MyVPC
+    Export:
+      Name: "MyVPCID"
